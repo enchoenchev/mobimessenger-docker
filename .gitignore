@@ -1,0 +1,6 @@
+apps/app/codebase/*
+apps/auth_service/codebase/*
+apps/chat_service/codebase/*
+!apps/app/codebase/.gitkeep
+!apps/auth_service/codebase/.gitkeep
+!apps/chat_service/codebase/.gitkeep

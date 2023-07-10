@@ -1,0 +1,70 @@
+version: "3.7"
+
+services:
+  app:
+    build:
+      context: ./docker/app
+    restart: unless-stopped
+    tty: false
+    ports:
+      - "8080:80"
+    volumes:
+      - ./apps/app/codebase:/usr/src/app
+      - ./apps/app/config/.env:/usr/src/app/.env
+    networks:
+      - mobimessenger-app-network
+  auth_service:
+    build:
+      context: ./docker/auth_service
+    restart: unless-stopped
+    tty: false
+    ports:
+      - "8082:80"
+    volumes:
+      - ./apps/auth_service/codebase:/usr/src/auth_service
+      - ./apps/auth_service/config/.env:/usr/src/auth_service/.env
+    networks:
+      - mobimessenger-app-network
+  chat_service:
+    build:
+      context: ./docker/chat_service
+    restart: unless-stopped
+    tty: false
+    ports:
+      - "8083:80"
+    volumes:
+      - ./apps/chat_service/codebase:/usr/src/chat_service
+      - ./apps/chat_service/config/.env:/usr/src/chat_service/.env
+    networks:
+      - mobimessenger-app-network
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    tty: false
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - mobimessenger-app-network
+
+  mongo-express:
+    image: mongo-express
+    restart: unless-stopped
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 123456
+      ME_CONFIG_MONGODB_URL: mongodb://root:123456@mongo:27017/
+    networks:
+      - mobimessenger-app-network
+
+networks:
+  mobimessenger-app-network:
+    driver: bridge
+
+volumes:
+  mongodata:
+    driver: local
